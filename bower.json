@@ -1,0 +1,27 @@
+{
+  "name": "tilesort-gallery",
+  "version": "0.0.1",
+  "homepage": "https://github.com/VersifitTechnologies/tilesort-gallery",
+  "authors": [
+    "Kyle Kemp <kempk@versifit.com>"
+  ],
+  "description": "An editable, sortable (optionally) image gallery",
+  "keywords": [
+    "image",
+    "gallery",
+    "sortable",
+    "editable",
+    "slider"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-bootstrap": "~0.12.1"
+  }
+}
