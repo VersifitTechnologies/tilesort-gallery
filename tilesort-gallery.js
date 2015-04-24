@@ -150,8 +150,10 @@ angular.module('tilesortGallery', ['ui.bootstrap'])
       </div>
       <div class="modal-body">
         <img class="fitted-image" ng-src="{{images[currentIndex].url}}" />
-        <span class="item-description uneditable" ng-if="!canEdit">{{images[currentIndex].description}}</span>
-        <a class="item-description editable" ng-if="canEdit" href editable-textarea="images[currentIndex].description">{{images[currentIndex].description || 'no description'}}</a>
+		<div class="item-description-container">
+          <span class="item-description uneditable" ng-if="!canEdit">{{images[currentIndex].description}}</span>
+          <a class="item-description editable" ng-if="canEdit" href editable-textarea="images[currentIndex].description">{{images[currentIndex].description || 'no description'}}</a>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-default" ng-click="close()">Close</button>
