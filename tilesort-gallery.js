@@ -132,8 +132,11 @@ angular.module('tilesortGallery', ['ui.bootstrap'])
           scope.canEdit = false;
         }
         
-        // initialize the directive
-        scope.setIndex(scope.startIndex || 0);
+		scope.$watch('images', function(newVal) {
+          if(scope.currentIndex || (Array.isArray(newVal) && newVal.length === 0) || typeof newVal === 'undefined') return;
+          // initialize the directive
+          scope.setIndex(scope.startIndex || 0);
+        });
       }
     }; 
   }])
