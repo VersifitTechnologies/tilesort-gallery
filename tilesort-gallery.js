@@ -215,7 +215,7 @@ angular.module('tilesortGallery', ['ui.bootstrap'])
       </div>
       <div class="tilesort-gallery">
         <img class="gallery-image"
-          ng-repeat="image in displayList" 
+          ng-repeat="image in displayList track by $index+currentIndex-1" 
           ng-show="$index+currentIndex-1 >= 0 && $index+currentIndex-1 < images.length" 
           ng-src="{{images[$index+currentIndex-1].url}}" />
           
