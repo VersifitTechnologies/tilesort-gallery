@@ -101,6 +101,11 @@ angular.module('tilesortGallery', ['ui.bootstrap'])
             if(evt.oldIndex === scope._currentIndex) {
               scope.currentIndex = evt.newIndex;
             }
+
+            scope.$root.$emit('tilesort-resort-item-moved', {
+              newIndex: evt.newIndex,
+              oldIndex: evt.oldIndex
+            });
           }
         };
         
