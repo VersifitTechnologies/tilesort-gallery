@@ -57,6 +57,7 @@
   right: 0;
 }
 .tilesort .tilesort-container .tilesort-gallery .gallery-image {
+  cursor: pointer;        
   height: 300px;
   max-height: 300px;
   position: absolute;

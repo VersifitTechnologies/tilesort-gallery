@@ -116,6 +116,12 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
         });
       };
 
+      // used by the gallery to allow selection of other images and opening the modal
+      scope.selectAndOpen = function (index) {
+        scope.setIndex(index);
+        scope.openModal();
+      };
+
       // whether or not sort should be enabled
       // alternatively, just don't load the plugin since this isn't watched
       if (!scope.sortable) {
@@ -154,7 +160,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
   // the gallery layout
   // by default, there are niceish css transitions, left/right buttons, and
   // a reasonable amount of space to display info about the current image
-  $templateCache.put('tilesort-view-gallery', '\n      <div class="tilesort-gallery-nav">\n        <span class="tilesort-gallery-nav-item tilesort-gallery-nav-left" \n          ng-click="moveLeft()" \n          ng-show="currentIndex > 0">\n          \n          <i class="fa fa-arrow-left"></i>\n        </span>\n        <span class="tilesort-gallery-nav-item tilesort-gallery-nav-right" \n          ng-click="moveRight()" \n          ng-show="currentIndex < images.length-1">\n          \n          <i class="fa fa-arrow-right"></i>\n        </span>\n      </div>\n      <div class="tilesort-gallery">\n        <img class="gallery-image"\n          ng-repeat="image in displayList track by $index+currentIndex-1" \n          ng-show="$index+currentIndex-1 >= 0 && $index+currentIndex-1 < images.length" \n          ng-src="{{images[$index+currentIndex-1].url}}" />\n          \n      </div>\n    ');
+  $templateCache.put('tilesort-view-gallery', '\n      <div class="tilesort-gallery-nav">\n        <span class="tilesort-gallery-nav-item tilesort-gallery-nav-left" \n          ng-click="moveLeft()" \n          ng-show="currentIndex > 0">\n          \n          <i class="fa fa-arrow-left"></i>\n        </span>\n        <span class="tilesort-gallery-nav-item tilesort-gallery-nav-right" \n          ng-click="moveRight()" \n          ng-show="currentIndex < images.length-1">\n          \n          <i class="fa fa-arrow-right"></i>\n        </span>\n      </div>\n      <div class="tilesort-gallery">\n        <img class="gallery-image"\n          ng-repeat="image in displayList track by $index+currentIndex-1" \n          ng-show="$index+currentIndex-1 >= 0 && $index+currentIndex-1 < images.length" \n          ng-click="selectAndOpen($index+currentIndex-1)"\n          ng-src="{{images[$index+currentIndex-1].url}}" />\n          \n      </div>\n    ');
 
   // the tile layout
   // by default, the tiles have a tooltip for their title

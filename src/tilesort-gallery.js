@@ -121,6 +121,12 @@ angular.module('tilesortGallery', ['ui.bootstrap'])
           });
         };
 
+        // used by the gallery to allow selection of other images and opening the modal
+        scope.selectAndOpen = function(index) {
+          scope.setIndex(index);
+          scope.openModal();
+        }
+
         // whether or not sort should be enabled
         // alternatively, just don't load the plugin since this isn't watched
         if(!scope.sortable) {
@@ -222,6 +228,7 @@ angular.module('tilesortGallery', ['ui.bootstrap'])
         <img class="gallery-image"
           ng-repeat="image in displayList track by $index+currentIndex-1" 
           ng-show="$index+currentIndex-1 >= 0 && $index+currentIndex-1 < images.length" 
+          ng-click="selectAndOpen($index+currentIndex-1)"
           ng-src="{{images[$index+currentIndex-1].url}}" />
           
       </div>
