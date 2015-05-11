@@ -119,6 +119,7 @@
 }
 .tilesort .tilesort-container .tilesort-gallery .gallery-image-container .gallery-image {
   max-height: 300px;
+  max-width: 100%;
   position: relative;
   top: 50%;
   transform: translateY(-50%);
