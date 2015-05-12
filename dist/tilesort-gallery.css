@@ -171,4 +171,5 @@
 }
 .tilesort .panel-footer .current-title {
   text-transform: uppercase;
+  font-weight: bold;
 }
