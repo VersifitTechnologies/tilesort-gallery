@@ -81,31 +81,35 @@ angular.module('tilesortGallery', ['ui.bootstrap'])
           scope.currentIndex = newIndex;
           resetDisplayList();
         };
-        
+        scope.onEnd = function(evt){
+          // move the currently active tile to compensate for sorting
+          if (evt.oldIndex < scope._currentIndex && evt.newIndex >= scope._currentIndex) {
+            scope.currentIndex--;
+          }
+
+          if (evt.oldIndex > scope._currentIndex && evt.newIndex <= scope._currentIndex) {
+            scope.currentIndex++;
+          }
+
+          if (evt.oldIndex === scope._currentIndex) {
+            scope.currentIndex = evt.newIndex;
+          }
+
+          scope.$root.$emit('tilesort-resort-item-moved', {
+            newIndex: evt.newIndex,
+            oldIndex: evt.oldIndex
+          });
+        };
         //internal; used to build the sortable / draggable tiles
         scope.sortableOptions = {
           onStart: function(evt) {
             scope._currentIndex = scope.currentIndex;
           },
           onEnd: function(evt) {
-            
-            // move the currently active tile to compensate for sorting
-            if(evt.oldIndex < scope._currentIndex && evt.newIndex >= scope._currentIndex) {
-              scope.currentIndex--;
-            } 
-            
-            if(evt.oldIndex > scope._currentIndex && evt.newIndex <= scope._currentIndex) {
-              scope.currentIndex++;
-            }
-            
-            if(evt.oldIndex === scope._currentIndex) {
-              scope.currentIndex = evt.newIndex;
-            }
-
-            scope.$root.$emit('tilesort-resort-item-moved', {
-              newIndex: evt.newIndex,
-              oldIndex: evt.oldIndex
-            });
+            scope.onEnd(evt);
+          },
+          onEndEvent: function(evt){
+            scope.onEnd(evt);
           }
         };
         
