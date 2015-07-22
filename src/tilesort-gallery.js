@@ -5,7 +5,7 @@ angular.module('tilesortGallery', ['ui.bootstrap'])
   }])
 
   .directive('tilesortGallery', ['$modal', '$injector', function($modal, $injector) {
-    
+
     return {
       restrict: 'AE',
       scope: {
@@ -13,34 +13,35 @@ angular.module('tilesortGallery', ['ui.bootstrap'])
         visibleModes: '=?',
         startIndex: '=?',
         images: '=',
-        
+
         canEdit: '=?',
-        
+
         modalTpl: '=?',
         modalCtrl: '=?',
-        
+
         sortable: '=?'
       },
       templateUrl: 'tilesort-gallery-layout-default',
       link: function(scope, element, attrs) {
-        
+
         // the gallery mode -- by default, only gallery and tiles are available
         scope.mode = scope.mode || 'gallery';
-        
+
         // the template for the modal
         scope.modalTpl = scope.modalTpl || 'tilesort-modal-default';
-        
+
         // the controller for the modal
         scope.modalCtrl = scope.modalCtrl || 'TilesortModalCtrl';
-        
+
         // the visible mode buttons
         scope.visibleModes = scope.visibleModes || [
-          { name: 'tiles', icon: 'fa fa-th' }, 
+          { name: 'tiles', icon: 'fa fa-th' },
+          { name: 'tiles-large', icon: 'fa fa-th-large' },
           { name: 'gallery', icon: 'fa fa-square' }
         ];
-        
+
         var MAX_ITEMS = 3;
-        
+
         // build the display list for animations to work properly
         var resetDisplayList = function() {
           var list = [scope.images[scope.currentIndex]];
@@ -49,33 +50,33 @@ angular.module('tilesortGallery', ['ui.bootstrap'])
           for(var i = scope.currentIndex - 1; i >= scope.currentIndex - iterable; i--) {
             list.unshift(scope.images[i]);
           }
-          
+
           for(var i = scope.currentIndex + 1; i <= scope.currentIndex + iterable; i++) {
             list.push(scope.images[i]);
           }
-          
+
           scope.displayList = list;
         };
-        
+
         // support hitting the left button
         // and rebuilding the display list accordingly
         scope.moveLeft = function() {
           if(scope.currentIndex === 0) return;
           scope.currentIndex = Math.max(0, scope.currentIndex-1);
-          
+
           scope.displayList.pop();
           scope.displayList.unshift(scope.images[scope.currentIndex-1]);
         };
-        
+
         // hit the right button, rebuild the display list
         scope.moveRight = function() {
           if(scope.currentIndex === scope.images.length-1) return;
           scope.currentIndex = Math.min(scope.images.length-1, scope.currentIndex+1);
-          
+
           scope.displayList.shift();
           scope.displayList.push(scope.images[scope.currentIndex+1]);
         };
-        
+
         // flat-out set the index and reset the display list
         scope.setIndex = function(newIndex) {
           scope.currentIndex = newIndex;
@@ -112,7 +113,7 @@ angular.module('tilesortGallery', ['ui.bootstrap'])
             scope.onEnd(evt);
           }
         };
-        
+
         // internal; open the modal with some sensible defaults
         scope.openModal = function() {
           $modal.open({
@@ -136,28 +137,28 @@ angular.module('tilesortGallery', ['ui.bootstrap'])
         if(!scope.sortable) {
           scope.sortableOptions.disabled = true;
         }
-        
+
         // whether or not title / description are editable in the popup
         scope.canEdit = scope.canEdit || false;
-        
+
         // if xeditable isn't available, turn editing off
         // an error will be thrown anyway if xeditable is not present
         // and canEdit is set to true, but this cleans up the display
         if(!$injector.has('editableOptions')) {
           scope.canEdit = false;
         }
-        
+
 		scope.$watch('images', function(newVal) {
           if(scope.currentIndex || (Array.isArray(newVal) && newVal.length === 0) || typeof newVal === 'undefined') return;
           // initialize the directive
           scope.setIndex(scope.startIndex || 0);
         });
       }
-    }; 
+    };
   }])
-  
+
   .run(['$templateCache', function($templateCache) {
-    
+
     // the modal
     // by default, it has the picture, an editable title and description, and close buttons
     $templateCache.put('tilesort-modal-default', `
@@ -167,8 +168,12 @@ angular.module('tilesortGallery', ['ui.bootstrap'])
         <span class="fa fa-close pull-right close" ng-click="close()"></span>
       </div>
       <div class="modal-body">
-        <img class="fitted-image" ng-src="{{images[currentIndex].url}}" />
-		<div class="item-description-container">
+        <div class="fitted-image-container-container">
+          <div class="fitted-image-container">
+            <img class="fitted-image" ng-src="{{images[currentIndex].url}}" />
+          </div>
+        </div>
+	      <div class="item-description-container">
           <span class="item-description uneditable" ng-if="!canEdit">{{images[currentIndex].description}}</span>
           <a class="item-description editable" ng-if="canEdit" href editable-textarea="images[currentIndex].description">{{images[currentIndex].description || 'no description'}}</a>
         </div>
@@ -177,7 +182,7 @@ angular.module('tilesortGallery', ['ui.bootstrap'])
         <button class="btn btn-default" ng-click="close()">Close</button>
       </div>
     `);
-    
+
     // the directive layout
     // by default, this renders the buttons in the bottom left
     // and has a reasonable amount of space (responsive) for the title / desc
@@ -188,11 +193,11 @@ angular.module('tilesortGallery', ['ui.bootstrap'])
         </div>
         <div class="panel-footer">
           <div class="btn-group col-md-2 col-xs-3">
-            <label class="btn btn-default" 
-              ng-model="$parent.mode" 
-              btn-radio="btn.name" 
+            <label class="btn btn-default"
+              ng-model="$parent.mode"
+              btn-radio="btn.name"
               ng-repeat="btn in visibleModes">
-              
+
               <i class="{{btn.icon}}"></i>
             </label>
           </div>
@@ -209,59 +214,73 @@ angular.module('tilesortGallery', ['ui.bootstrap'])
         </div>
       </div>
     `);
-    
+
     // the gallery layout
     // by default, there are niceish css transitions, left/right buttons, and
     // a reasonable amount of space to display info about the current image
     $templateCache.put('tilesort-view-gallery', `
       <div class="tilesort-gallery-nav">
-        <span class="tilesort-gallery-nav-item tilesort-gallery-nav-left" 
-          ng-click="moveLeft()" 
+        <span class="tilesort-gallery-nav-item tilesort-gallery-nav-left"
+          ng-click="moveLeft()"
           ng-show="currentIndex > 0">
-          
+
           <i class="fa fa-arrow-left"></i>
         </span>
-        <span class="tilesort-gallery-nav-item tilesort-gallery-nav-right" 
-          ng-click="moveRight()" 
+        <span class="tilesort-gallery-nav-item tilesort-gallery-nav-right"
+          ng-click="moveRight()"
           ng-show="currentIndex < images.length-1">
-          
+
           <i class="fa fa-arrow-right"></i>
         </span>
       </div>
       <div class="tilesort-gallery">
-        <div 
-          class="gallery-image-container" 
-          ng-repeat="image in displayList track by $index" 
+        <div
+          class="gallery-image-container"
+          ng-repeat="image in displayList track by $index"
           ng-show="$index+currentIndex-1 >= 0 && $index+currentIndex-1 < images.length"
           >
           <img class="gallery-image"
             ng-click="selectAndOpen($index+currentIndex-1)"
             ng-src="{{images[$index+currentIndex-1].url}}" />
         </div>
-          
+
       </div>
     `);
-    
+
     // the tile layout
     // by default, the tiles have a tooltip for their title
     // and they're also drag/drop sortable
     // the active one is indicated by a glowing blue
     $templateCache.put('tilesort-view-tiles', `
       <div class="tilesort-tiles" ng-sortable="sortableOptions">
-        <div class="tilesort-tile" 
-          ng-repeat="tile in images" 
-          ng-click="setIndex($index)" 
+        <div class="tilesort-tile"
+          ng-repeat="tile in images"
+          ng-click="setIndex($index)"
           tooltip="{{images[$index].title}}"
           tooltip-append-to-body="true"
           ng-class="{active: currentIndex === $index}">
-          
+
           <img class="gallery-image" ng-src="{{images[$index].url}}" />
         </div>
       </div>
     `);
-    
+
+    $templateCache.put('tilesort-view-tiles-large', `
+      <div class="tilesort-tiles" ng-sortable="sortableOptions">
+        <div class="tilesort-tile-large"
+          ng-repeat="tile in images"
+          ng-click="setIndex($index)"
+          tooltip="{{images[$index].title}}"
+          tooltip-append-to-body="true"
+          ng-class="{active: currentIndex === $index}">
+
+          <img class="gallery-image" ng-src="{{images[$index].url}}" />
+        </div>
+      </div>
+    `);
+
   }]);
-  
+
 // optionally load xeditable if it's there, and set the theme to bs3
 try {
   angular.module('xeditable');
