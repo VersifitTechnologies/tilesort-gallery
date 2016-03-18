@@ -27,12 +27,12 @@
 .tilesort-modal .item-description-container {
   padding: 15px;
 }
-/*.tilesort {
+.tilesort {
   min-width: 500px;
-}*/
+}
 .tilesort .tilesort-container {
-  max-height: 250px;
-  min-height: 250px;
+  max-height: 300px;
+  min-height: 300px;
   overflow-y: auto;
   overflow-x: hidden;
   position: relative;
@@ -40,7 +40,7 @@
 }
 .tilesort .tilesort-container .tilesort-gallery-nav {
   position: relative;
-  height: 250px;
+  height: 300px;
 }
 .tilesort .tilesort-container .tilesort-gallery-nav .tilesort-gallery-nav-item {
   position: absolute;
@@ -120,15 +120,15 @@
 }
 @media screen and (min-width: 1200px) {
   .tilesort .tilesort-container .tilesort-gallery .gallery-image-container {
-    width: calc(20%);
+    width: calc(30%);
   }
   .tilesort .tilesort-container .tilesort-gallery .gallery-image-container:nth-child(1) {
     left: -50px;
     transform: scale(0.9, 0.9);
   }
   .tilesort .tilesort-container .tilesort-gallery .gallery-image-container:nth-child(2) {
-    width: calc(35%);
-    left: 350px;
+    width: calc(45%);
+    left: 300px;
   }
   .tilesort .tilesort-container .tilesort-gallery .gallery-image-container:nth-child(3) {
     left: 825px;
@@ -217,48 +217,4 @@
 .tilesort .panel-footer .current-title {
   text-transform: uppercase;
   font-weight: bold;
-}
-
-.tilesort-margin-top {
-    margin-top: -20px;
-}
-
-.nav-button {
-    margin: 8px 30px;
-}
-
-.modal-fit .modal-body {
-    max-height: calc(100vh - 200px);
-}
-
-#image-container {
-    max-height: calc(100vh - 355px);
-}
-
-.description-container {
-    max-height: 3em;
-    overflow: auto;
-}
-
-.metric-title {
-    font-weight: 700;
-    color: #333 !important;
-}
-
-.metric-description {
-    color: #333;
-}
-
-.margin-right-15 {
-    margin-right: 15px;
-}
-
-/*.drag-drop-upload > div > #tilesort-container {
-    -webkit-box-shadow:inset 0px 0px 0px 4px #66afe9;
-    -moz-box-shadow:inset 0px 0px 0px 4px #66afe9;
-    box-shadow:inset 0px 0px 0px 4px #66afe9;
-}*/
-
-.drag-drop-upload > div > #tilesort-container {
-    border: 3px dashed #66afe9;
 }
