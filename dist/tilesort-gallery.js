@@ -14,6 +14,9 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
 
             canEdit: '=?',
 
+            uploadImage: '=?',
+            uploadProgress: '=',
+
             modalTpl: '=?',
             modalCtrl: '=?',
 
@@ -21,6 +24,11 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
         },
         templateUrl: 'tilesort-gallery-layout-default',
         link: function link(scope, element, attrs) {
+            scope.uploadImage = scope.uploadImage || false;
+            scope.filesProgress = scope.uploadProgress;
+            scope.$watch('uploadProgress', function() { //watch file upload progress when upload value increases
+                scope.filesProgress = scope.uploadProgress;
+            });
 
             // the gallery mode -- by default, only gallery and tiles are available
             scope.mode = scope.mode || 'gallery';
@@ -80,30 +88,6 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                 resetDisplayList();
             };
 
-            scope.uploadImages = function(imageFiles) {
-                console.log('upload', imageFiles);
-
-                var objectUrl = '';
-
-                 _.forEach(imageFiles, function(image) {
-                     objectUrl = URL.createObjectURL(image);
-                     console.log('objectUrl', objectUrl);
-                 });
-
-                /*var upload = Upload.upload(
-                    {
-                        url: '',
-                        data: ''
-                    }
-                ).then(function(response) {
-                        console.log('response', response);
-                    });*/
-            };
-
-            scope.drag = function(isDragging, cssClass, event) {
-                console.log(isDragging, cssClass, event);
-            };
-
             scope.onEnd = function (evt) {
                 // move the currently active tile to compensate for sorting
                 if (evt.oldIndex < scope._currentIndex && evt.newIndex >= scope._currentIndex) {
@@ -136,10 +120,12 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                 }
             };
 
+            scope.sortableOptionsGallery = {
+                sort: false
+            };
+
             // internal; open the modal with some sensible defaults
             scope.openModal = function () {
-                var currentImageTitle = scope.images[scope.currentIndex].title;
-
                 $modal.open({
                     scope: scope,
                     controller: scope.modalCtrl,
@@ -152,7 +138,9 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                             return _.cloneDeep(scope);
                         }
                     }
-                })
+                }).result.then(function(response) {
+                    scope.images[scope.currentIndex].title = response;
+                });
             };
 
             // used by the gallery to allow selection of other images and opening the modal
@@ -197,55 +185,68 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
     $templateCache.put('tilesort-gallery-layout-default', '\n' +
         '<nav class="navbar navbar-default">' +
             '<div class="container">' +
-                '<div class="navbar-header col-xs-12 col-sm-2 col-lg-2" style="margin-left: -15px;">' +
+                '<div class="navbar-header col-xs-12 col-sm-2 col-md-2 col-lg-2" style="margin-left: -15px;">' +
                     '<a class="navbar-brand">Investigate</a>' +
                 '</div>' +
-                '<div class="col-xs-12 col-sm-5 col-lg-7">' +
+                '<div class="col-xs-12 col-sm-5 col-md-6 col-lg-7">' +
                     '<span class="current-title metric-title" ng-class="{\'navbar-text\': !images[currentIndex].description}">{{images[currentIndex].title}}</span>' +
                     '<br>' +
                     '<div class="description-container" ng-if="images[currentIndex].description">' +
                         '<span class="current-description metric-description">{{images[currentIndex].description}}</span>' +
                     '</div>' +
                 '</div>' +
-                '<div class="col-xs-12 col-sm-5 col-lg-3">' +
-                    '<div class="btn-group pull-right">' +
-                        '<button type="button" class="btn btn-default navbar-btn" ng-model="$parent.mode" btn-radio="btn.name" ng-repeat="btn in visibleModes">' +
-                            '<i class="{{btn.icon}}"></i>' +
+                '<div class="col-xs-12 col-sm-5 col-md-4 col-lg-3">' +
+                    '<div ng-show="filesProgress > 0">' +
+                        '<div id="image-upload-progress-bar" class="nav navbar-text progress image-upload-progress">' +
+                            '<div class="progress-bar" role="progressbar" ng-style="{width: filesProgress + \'%\'}">' +
+                                '<span class="sr-only"></span>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div ng-show="filesProgress === 0">' +
+                        '<div class="btn-group pull-right">' +
+                            '<button type="button" class="btn btn-default navbar-btn" ng-model="$parent.mode" btn-radio="btn.name" ng-repeat="btn in visibleModes">' +
+                                '<i class="{{btn.icon}}"></i>' +
+                            '</button>' +
+                        '</div>' +
+                        '<button type="button" class="btn btn-default navbar-btn pull-right margin-right-15" ng-click="openModal()" ng-disabled="images.length === 0" tooltip="View metric">' +
+                            '<i class="fa fa-expand"></i>' +
+                        '</button>' +
+                        '<button type="button" class="btn btn-primary navbar-btn pull-right margin-right-15" ng-disabled="!canEdit" tooltip="Upload" ng-if="uploadImage && canEdit"' +
+                            'ngf-select="uploadImage($files)"' +
+                            'ngf-multiple="false"' +
+                            'ngf-pattern="image/*"' +
+                            'ngf-accept="\'image/*\'"' +
+                            'ngf-max-size="5MB"' +
+                            'ngf-select-disabled="!canEdit"' +
+                            'ngf-drop-available="false"' +
+                            '>' +
+                                '<i class="fa fa-upload"></i>' +
                         '</button>' +
                     '</div>' +
-                    '<button type="button" class="btn btn-primary navbar-btn pull-right margin-right-15" ng-disabled="!canEdit" tooltip="Upload"' +
-                        'ngf-select="uploadImages($files)"' +
-                        'ngf-multiple="true"' +
-                        'ngf-pattern="image/*"' +
-                        'ngf-accept="\'image/*\'"' +
-                        'ngf-select-disabled="!canEdit"' +
-                        '>' +
-                            '<i class="fa fa-upload"></i>' +
-                    '</button>' +
-                    '<button type="button" class="btn btn-default navbar-btn pull-right margin-right-15" ng-click="openModal()" ng-disabled="images.length === 0" tooltip="View metric">' +
-                        '<i class="fa fa-expand"></i>' +
-                    '</button>' +
                 '</div>' +
             '</div>' +
         '</nav>' +
-        '<div class="panel panel-default tilesort tilesort-margin-top" readonly="true"' +
-            'ngf-drop="uploadImages($files)"' +
-            'ngf-multiple="true"' +
+        '<div id="drag-drop-container" class="panel panel-default tilesort tilesort-margin-top" readonly="true" ng-if="uploadImage && canEdit"' +
+            'ngf-drop="uploadImage($files)"' +
+            'ngf-multiple="false"' +
             'ngf-pattern="image/*"' +
             'ngf-accept="\'image/*\'"' +
+            'ngf-max-size="5MB"' +
             'ngf-drag-over-class="\'drag-drop-upload\'"' +
-            'ngf-drag="drag($isDragging, $class, $event)"' +
-            'ngf-enable-firefox-paste="true"' +
             'ngf-drop-disabled="!canEdit"' +
             '>' +
                 '<div class="panel-body tilesort-container" ng-include="\'tilesort-view-\'+mode"></div>' +
+        '</div>' +
+        '<div id="drag-drop-container" class="panel panel-default tilesort tilesort-margin-top" readonly="true" ng-if="!(uploadImage && canEdit)">' +
+            '<div class="panel-body tilesort-container" ng-include="\'tilesort-view-\'+mode"></div>' +
         '</div>'
     );
 
     // the gallery layout
     // by default, there are niceish css transitions, left/right buttons, and
     // a reasonable amount of space to display info about the current image
-    $templateCache.put('tilesort-view-gallery', '\n      <div class="tilesort-gallery-nav">\n        <span class="tilesort-gallery-nav-item tilesort-gallery-nav-left"\n          ng-click="moveLeft()"\n          ng-show="currentIndex > 0">\n\n          <i class="fa fa-arrow-left"></i>\n        </span>\n        <span class="tilesort-gallery-nav-item tilesort-gallery-nav-right"\n          ng-click="moveRight()"\n          ng-show="currentIndex < images.length-1">\n\n          <i class="fa fa-arrow-right"></i>\n        </span>\n      </div>\n      <div id="tilesort-container" class="tilesort-gallery">\n        <div\n          class="gallery-image-container"\n          ng-repeat="image in displayList track by $index"\n          ng-show="$index+currentIndex-1 >= 0 && $index+currentIndex-1 < images.length"\n          >\n          <img class="gallery-image"\n            ng-click="selectAndOpen($index+currentIndex-1)"\n            ng-src="{{images[$index+currentIndex-1].url}}" />\n        </div>\n\n      </div>\n    ');
+    $templateCache.put('tilesort-view-gallery', '\n      <div class="tilesort-gallery-nav">\n        <span class="tilesort-gallery-nav-item tilesort-gallery-nav-left"\n          ng-click="moveLeft()"\n          ng-show="currentIndex > 0">\n\n          <i class="fa fa-arrow-left"></i>\n        </span>\n        <span class="tilesort-gallery-nav-item tilesort-gallery-nav-right"\n          ng-click="moveRight()"\n          ng-show="currentIndex < images.length-1">\n\n          <i class="fa fa-arrow-right"></i>\n        </span>\n      </div>\n      <div class="tilesort-gallery" ng-sortable="sortableOptionsGallery">\n        <div\n          class="gallery-image-container"\n          ng-repeat="image in displayList track by $index"\n          ng-show="$index+currentIndex-1 >= 0 && $index+currentIndex-1 < images.length"\n          >\n          <img class="gallery-image"\n            ng-click="selectAndOpen($index+currentIndex-1)"\n            ng-src="{{images[$index+currentIndex-1].url}}" />\n        </div>\n\n      </div>\n    ');
 
     // the tile layout
     // by default, the tiles have a tooltip for their title

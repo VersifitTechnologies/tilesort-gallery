@@ -253,12 +253,15 @@
     margin-right: 15px;
 }
 
-/*.drag-drop-upload > div > #tilesort-container {
-    -webkit-box-shadow:inset 0px 0px 0px 4px #66afe9;
-    -moz-box-shadow:inset 0px 0px 0px 4px #66afe9;
-    box-shadow:inset 0px 0px 0px 4px #66afe9;
-}*/
+.image-upload-progress {
+    width: 100%;
+}
 
-.drag-drop-upload > div > #tilesort-container {
-    border: 3px dashed #66afe9;
+#image-upload-progress-bar {
+    margin-left: 0px;
+    margin-bottom: 15px;
+}
+
+.progress {
+    margin-bottom: 0px;
 }
