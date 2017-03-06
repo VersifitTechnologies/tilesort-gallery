@@ -205,7 +205,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                     '</div>' +
                     '<div ng-show="filesProgress === 0">' +
                         '<div class="btn-group pull-right">' +
-                            '<button type="button" class="btn btn-default navbar-btn" ng-model="$parent.mode" btn-radio="btn.name" ng-repeat="btn in visibleModes">' +
+                            '<button type="button" class="btn btn-default navbar-btn" ng-model="$parent.mode" uib-btn-radio="btn.name" ng-repeat="btn in visibleModes">' +
                                 '<i class="{{btn.icon}}"></i>' +
                             '</button>' +
                         '</div>' +
