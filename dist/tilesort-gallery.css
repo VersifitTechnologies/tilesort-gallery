@@ -144,7 +144,9 @@
 }
 .tilesort .tilesort-container .tilesort-tiles .tilesort-tile,
 .tilesort .tilesort-container .tilesort-tiles .tilesort-tile-large {
-  float: left;
+  /*float: left;*/
+  display: inline-block;
+  vertical-align: top;
   margin: 15px;
   cursor: pointer;
 }
@@ -162,44 +164,47 @@
   height: 100%;
 }
 .tilesort .tilesort-container .tilesort-tiles .tilesort-tile-large {
+  height: calc(50% - 30px);
   width: calc(50% - 30px);
-  height: 15vw;
 }
 @media screen and (min-width: 768px) {
   .tilesort .tilesort-container .tilesort-tiles .tilesort-tile-large {
-    width: calc(25% - 30px);
-    height: 10vw;
+    height: calc(50% - 30px);
+    width: calc(50% - 30px);
   }
 }
 @media screen and (min-width: 992px) {
   .tilesort .tilesort-container .tilesort-tiles .tilesort-tile-large {
-    width: calc(25% - 30px);
-    height: 10vw;
+    height: calc(50% - 30px);
+    width: calc(50% - 30px);
   }
 }
 @media screen and (min-width: 1200px) {
   .tilesort .tilesort-container .tilesort-tiles .tilesort-tile-large {
-    width: calc(20% - 30px);
+    height: calc(50% - 30px);
+    width: calc(50% - 30px);
   }
 }
 .tilesort .tilesort-container .tilesort-tiles .tilesort-tile {
-  width: calc(25% - 30px);
-  height: 10vw;
+  height: calc(33.3% - 30px);
+  width: calc(33.3% - 30px);
 }
 @media screen and (min-width: 768px) {
   .tilesort .tilesort-container .tilesort-tiles .tilesort-tile {
-    width: calc(12.5% - 30px);
-    height: 5vw;
+    height: calc(33.3% - 30px);
+    width: calc(33.3% - 30px);
   }
 }
 @media screen and (min-width: 992px) {
   .tilesort .tilesort-container .tilesort-tiles .tilesort-tile {
-    width: calc(12.5% - 30px);
+    height: calc(33.3% - 30px);
+    width: calc(33.3% - 30px);
   }
 }
 @media screen and (min-width: 1200px) {
   .tilesort .tilesort-container .tilesort-tiles .tilesort-tile {
-    width: calc(10% - 30px);
+    height: calc(33.3% - 30px);
+    width: calc(33.3% - 30px);
   }
 }
 .tilesort .panel-footer {

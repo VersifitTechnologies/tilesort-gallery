@@ -2,7 +2,7 @@
 
 angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtrl', ['$scope', '$modalInstance', function ($scope, $modalInstance) {
     $scope.close = $modalInstance.close;
-}]).directive('tilesortGallery', ['$modal', '$injector', function ($modal, $injector) {
+}]).directive('tilesortGallery', ['$uibModal', '$injector', function ($uibModal, $injector) {
 
     return {
         restrict: 'AE',
@@ -126,7 +126,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
 
             // internal; open the modal with some sensible defaults
             scope.openModal = function () {
-                $modal.open({
+                $uibModal.open({
                     scope: scope,
                     controller: scope.modalCtrl,
                     templateUrl: scope.modalTpl,
@@ -205,14 +205,14 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                     '</div>' +
                     '<div ng-show="filesProgress === 0">' +
                         '<div class="btn-group pull-right">' +
-                            '<button type="button" class="btn btn-default navbar-btn" ng-model="$parent.mode" btn-radio="btn.name" ng-repeat="btn in visibleModes">' +
+                            '<button type="button" class="btn btn-default navbar-btn" ng-model="$parent.mode" uib-btn-radio="btn.name" ng-repeat="btn in visibleModes">' +
                                 '<i class="{{btn.icon}}"></i>' +
                             '</button>' +
                         '</div>' +
-                        '<button type="button" class="btn btn-default navbar-btn pull-right margin-right-15" ng-click="openModal()" ng-disabled="images.length === 0" tooltip="View metric">' +
+                        '<button type="button" class="btn btn-default navbar-btn pull-right margin-right-15" ng-click="openModal()" ng-disabled="images.length === 0" uib-tooltip="View metric" tooltip-append-to-body="true">' +
                             '<i class="fa fa-expand"></i>' +
                         '</button>' +
-                        '<button type="button" class="btn btn-primary navbar-btn pull-right margin-right-15" ng-disabled="!canEdit" tooltip="Upload" ng-if="uploadImage && canEdit"' +
+                        '<button type="button" class="btn btn-primary navbar-btn pull-right margin-right-15" ng-disabled="!canEdit" uib-tooltip="Upload" tooltip-append-to-body="true" ng-if="uploadImage && canEdit"' +
                             'ngf-select="uploadImage($files)"' +
                             'ngf-multiple="false"' +
                             'ngf-pattern="image/*"' +
