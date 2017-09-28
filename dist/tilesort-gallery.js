@@ -158,6 +158,18 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
             // whether or not title / description are editable in the popup
             scope.canEdit = scope.canEdit || false;
 
+            scope.canUpload = function(canEdit) {
+                if (canEdit) {
+                    if (scope.filesProgress === 0) { //if can edit and there's no file uploading in progress, then allow upload
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else { //if can't edit, then don't allow upload
+                    return false;
+                }
+            };
+
             // if xeditable isn't available, turn editing off
             // an error will be thrown anyway if xeditable is not present
             // and canEdit is set to true, but this cleans up the display
@@ -183,63 +195,70 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
     // and has a reasonable amount of space (responsive) for the title / desc //col-md-2 col-xs-3
     // it also has an expand button that opens the current image in a modal //class="col-md-1 col-xs-2"
     $templateCache.put('tilesort-gallery-layout-default', '\n' +
-        '<nav class="navbar navbar-default">' +
-            '<div class="container">' +
-                '<div class="navbar-header col-xs-12 col-sm-2 col-md-2 col-lg-2" style="margin-left: -15px;">' +
-                    '<a class="navbar-brand">Investigate</a>' +
-                '</div>' +
-                '<div class="col-xs-12 col-sm-5 col-md-6 col-lg-7">' +
-                    '<span class="current-title metric-title" ng-class="{\'navbar-text\': !images[currentIndex].description}">{{images[currentIndex].title}}</span>' +
-                    '<br>' +
-                    '<div class="description-container" ng-if="images[currentIndex].description">' +
-                        '<span class="current-description metric-description">{{images[currentIndex].description}}</span>' +
+        '<div class="row" ng-show="filesProgress > 0">' +
+            '<div class="col">' +
+                '<div id="image-upload-progress-bar" class="nav navbar-text progress image-upload-progress">' +
+                    '<div class="progress-bar" role="progressbar" ng-style="{width: filesProgress + \'%\'}">' +
+                        '<span class="sr-only"></span>' +
                     '</div>' +
                 '</div>' +
-                '<div class="col-xs-12 col-sm-5 col-md-4 col-lg-3">' +
-                    '<div ng-show="filesProgress > 0">' +
-                        '<div id="image-upload-progress-bar" class="nav navbar-text progress image-upload-progress">' +
-                            '<div class="progress-bar" role="progressbar" ng-style="{width: filesProgress + \'%\'}">' +
-                                '<span class="sr-only"></span>' +
-                            '</div>' +
-                        '</div>' +
+            '</div>' +
+        '</div>' +
+
+        '<div class="row">' +
+            '<div class="col">' +
+                '<div class="card card-border metric-container">' +
+                    '<header class="card-header">' +
+                        '<h4 class="card-title">{{images[currentIndex].title}}</h4>' +
+                        '<ul class="card-actions">' +
+                            '<li>' +
+                                '<button type="button" class="btn btn-primary" ng-disabled="!canUpload(canEdit)" uib-tooltip="Upload" ng-if="uploadImage && canEdit"' +
+                                    'ngf-select="uploadImage($files)"' +
+                                    'ngf-multiple="false"' +
+                                    'ngf-pattern="image/*"' +
+                                    'ngf-accept="\'image/*\'"' +
+                                    'ngf-max-size="5MB"' +
+                                    'ngf-select-disabled="!canEdit"' +
+                                    'ngf-drop-available="false"' +
+                                    '>' +
+                                    '<i class="fa fa-upload"></i>' +
+                                '</button>' +
+                            '</li>' +
+                            '<li>' +
+                                '<button type="button" class="btn btn-default" ng-click="openModal()" ng-disabled="images.length === 0 || filesProgress > 0" uib-tooltip="View metric">' +
+                                    '<i class="fa fa-expand"></i>' +
+                                '</button>' +
+                            '</li>' +
+                            '<li>' +
+                                '<div class="btn-group">' +
+                                    '<button type="button" class="btn btn-default" ng-model="$parent.mode" ng-disabled="filesProgress > 0" uib-btn-radio="btn.name" ng-repeat="btn in visibleModes">' +
+                                        '<i class="{{btn.icon}}"></i>' +
+                                    '</button>' +
+                                '</div>' +
+                            '</li>' +
+                        '</ul>' +
+                    '</header>' +
+                    '<div class="card-block bg-faded" ng-if="images[currentIndex].description">' +
+                        '<div>{{images[currentIndex].description}}</div>' +
                     '</div>' +
-                    '<div ng-show="filesProgress === 0">' +
-                        '<div class="btn-group pull-right">' +
-                            '<button type="button" class="btn btn-default navbar-btn" ng-model="$parent.mode" uib-btn-radio="btn.name" ng-repeat="btn in visibleModes">' +
-                                '<i class="{{btn.icon}}"></i>' +
-                            '</button>' +
-                        '</div>' +
-                        '<button type="button" class="btn btn-default navbar-btn pull-right margin-right-15" ng-click="openModal()" ng-disabled="images.length === 0" tooltip="View metric">' +
-                            '<i class="fa fa-expand"></i>' +
-                        '</button>' +
-                        '<button type="button" class="btn btn-primary navbar-btn pull-right margin-right-15" ng-disabled="!canEdit" tooltip="Upload" ng-if="uploadImage && canEdit"' +
-                            'ngf-select="uploadImage($files)"' +
+                    '<div class="card-block bg-faded">' +
+                        '<div id="drag-drop-container" class="panel panel-default tilesort tilesort-margin-top" readonly="true" ng-if="uploadImage && canEdit"' +
+                            'ngf-drop="uploadImage($files)"' +
                             'ngf-multiple="false"' +
                             'ngf-pattern="image/*"' +
                             'ngf-accept="\'image/*\'"' +
                             'ngf-max-size="5MB"' +
-                            'ngf-select-disabled="!canEdit"' +
-                            'ngf-drop-available="false"' +
+                            'ngf-drag-over-class="\'drag-drop-upload\'"' +
+                            'ngf-drop-disabled="!canEdit"' +
                             '>' +
-                                '<i class="fa fa-upload"></i>' +
-                        '</button>' +
+                                '<div class="panel-body tilesort-container" ng-include="\'tilesort-view-\'+mode"></div>' +
+                        '</div>' +
+                        '<div id="drag-drop-container" class="panel panel-default tilesort tilesort-margin-top" readonly="true" ng-if="!(uploadImage && canEdit)">' +
+                            '<div class="panel-body tilesort-container" ng-include="\'tilesort-view-\'+mode"></div>' +
+                        '</div>' +
                     '</div>' +
                 '</div>' +
             '</div>' +
-        '</nav>' +
-        '<div id="drag-drop-container" class="panel panel-default tilesort tilesort-margin-top" readonly="true" ng-if="uploadImage && canEdit"' +
-            'ngf-drop="uploadImage($files)"' +
-            'ngf-multiple="false"' +
-            'ngf-pattern="image/*"' +
-            'ngf-accept="\'image/*\'"' +
-            'ngf-max-size="5MB"' +
-            'ngf-drag-over-class="\'drag-drop-upload\'"' +
-            'ngf-drop-disabled="!canEdit"' +
-            '>' +
-                '<div class="panel-body tilesort-container" ng-include="\'tilesort-view-\'+mode"></div>' +
-        '</div>' +
-        '<div id="drag-drop-container" class="panel panel-default tilesort tilesort-margin-top" readonly="true" ng-if="!(uploadImage && canEdit)">' +
-            '<div class="panel-body tilesort-container" ng-include="\'tilesort-view-\'+mode"></div>' +
         '</div>'
     );
 
