@@ -1,8 +1,8 @@
 'use strict';
 
-angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtrl', ['$scope', '$modalInstance', function ($scope, $modalInstance) {
-  $scope.close = $modalInstance.close;
-}]).directive('tilesortGallery', ['$modal', '$injector', function ($modal, $injector) {
+angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtrl', ['$scope', '$uibModalInstance', function ($scope, $uibmodalInstance) {
+  $scope.close = $uibmodalInstance.close;
+}]).directive('tilesortGallery', ['$uibModal', '$injector', function ($uibModal, $injector) {
 
   return {
     restrict: 'AE',
@@ -110,7 +110,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
 
       // internal; open the modal with some sensible defaults
       scope.openModal = function () {
-        $modal.open({
+        $uibModal.open({
           scope: scope,
           controller: scope.modalCtrl,
           templateUrl: scope.modalTpl,

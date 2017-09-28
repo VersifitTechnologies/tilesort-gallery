@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtrl', ['$scope', '$modalInstance', function ($scope, $modalInstance) {
-    $scope.close = $modalInstance.close;
+angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtrl', ['$scope', '$uibModalInstance', function ($scope, $uibModalInstance) {
+    $scope.close = $uibModalInstance.close;
 }]).directive('tilesortGallery', ['$uibModal', '$injector', function ($uibModal, $injector) {
 
     return {
