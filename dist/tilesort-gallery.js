@@ -159,15 +159,8 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
             scope.canEdit = scope.canEdit || false;
 
             scope.canUpload = function(canEdit) {
-                if (canEdit) {
-                    if (scope.filesProgress === 0) { //if can edit and there's no file uploading in progress, then allow upload
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else { //if can't edit, then don't allow upload
-                    return false;
-                }
+                //They can upload if they have edit permission and an upload isn't happeneing already
+                return canEdit && scope.filesProgress === 0;
             };
 
             // if xeditable isn't available, turn editing off
