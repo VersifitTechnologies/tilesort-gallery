@@ -209,10 +209,10 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                                 '<i class="{{btn.icon}}"></i>' +
                             '</button>' +
                         '</div>' +
-                        '<button type="button" class="btn btn-default navbar-btn pull-right margin-right-15" ng-click="openModal()" ng-disabled="images.length === 0" tooltip="View metric">' +
+                        '<button type="button" class="btn btn-default navbar-btn pull-right margin-right-15" ng-click="openModal()" ng-disabled="images.length === 0" uib-tooltip="View metric" tooltip-append-to-body="true">' +
                             '<i class="fa fa-expand"></i>' +
                         '</button>' +
-                        '<button type="button" class="btn btn-primary navbar-btn pull-right margin-right-15" ng-disabled="!canEdit" tooltip="Upload" ng-if="uploadImage && canEdit"' +
+                        '<button type="button" class="btn btn-primary navbar-btn pull-right margin-right-15" ng-disabled="!canEdit" uib-tooltip="Upload" tooltip-append-to-body="true" ng-if="uploadImage && canEdit"' +
                             'ngf-select="uploadImage($files)"' +
                             'ngf-multiple="false"' +
                             'ngf-pattern="image/*"' +
