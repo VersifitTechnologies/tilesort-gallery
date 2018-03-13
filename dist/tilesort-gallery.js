@@ -181,19 +181,17 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
 
     // the modal
     // by default, it has the picture, an editable title and description, and close buttons
-    $templateCache.put('tilesort-modal-default', '\n      <div class="modal-header">\n        <span class="item-title uneditable" ng-if="!canEdit">{{images[currentIndex].title}}</span>\n        <a class="item-title editable" ng-if="canEdit" href editable-text="images[currentIndex].title">{{images[currentIndex].title || \'no title\'}}</a>\n        <span class="fa fa-close pull-right close" ng-click="close()"></span>\n      </div>\n      <div class="modal-body">\n        <div class="fitted-image-container-container">\n          <div class="fitted-image-container">\n            <img class="fitted-image" ng-src="{{images[currentIndex].url}}" />\n          </div>\n        </div>\n\t      <div class="item-description-container">\n          <span class="item-description uneditable" ng-if="!canEdit">{{images[currentIndex].description}}</span>\n          <a class="item-description editable" ng-if="canEdit" href editable-textarea="images[currentIndex].description">{{images[currentIndex].description || \'no description\'}}</a>\n        </div>\n      </div>\n      <div class="modal-footer">\n        <button class="btn btn-default" ng-click="close()">Close</button>\n      </div>\n    ');
+    $templateCache.put('tilesort-modal-default', '\n      <div class="modal-header">\n        <span class="item-title uneditable" ng-if="!canEdit">{{images[currentIndex].title}}</span>\n        <a class="item-title editable" ng-if="canEdit" href editable-text="images[currentIndex].title">{{images[currentIndex].title || \'no title\'}}</a>\n        <span class="fa fa-close pull-right close" ng-click="close()"></span>\n      </div>\n      <div class="modal-body">\n        <div class="fitted-image-container-container">\n          <div class="fitted-image-container">\n            <img class="fitted-image" ng-src="{{images[currentIndex].url}}" />\n          </div>\n        </div>\n\t      <div class="item-description-container">\n          <span class="item-description uneditable" ng-if="!canEdit">{{images[currentIndex].description}}</span>\n          <a class="item-description editable" ng-if="canEdit" href editable-textarea="images[currentIndex].description">{{images[currentIndex].description || \'no description\'}}</a>\n        </div>\n      </div>\n      <div class="modal-footer">\n        <button class="btn btn-secondary" ng-click="close()">Close</button>\n      </div>\n    ');
 
     // the directive layout
     // by default, this renders the buttons in the bottom left
     // and has a reasonable amount of space (responsive) for the title / desc //col-md-2 col-xs-3
     // it also has an expand button that opens the current image in a modal //class="col-md-1 col-xs-2"
     $templateCache.put('tilesort-gallery-layout-default', '\n' +
-        '<div class="row" ng-show="filesProgress > 0">' +
+        '<div class="row mb-3" ng-show="filesProgress > 0">' +
             '<div class="col">' +
-                '<div id="image-upload-progress-bar" class="nav navbar-text progress image-upload-progress">' +
-                    '<div class="progress-bar" role="progressbar" ng-style="{width: filesProgress + \'%\'}">' +
-                        '<span class="sr-only"></span>' +
-                    '</div>' +
+                '<div class="progress">' +
+                    '<div class="progress-bar" role="progressbar" ng-style="{width: filesProgress + \'%\'}"></div>' +
                 '</div>' +
             '</div>' +
         '</div>' +
@@ -218,15 +216,15 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                                 '</button>' +
                             '</li>' +
                             '<li>' +
-                                '<button type="button" class="btn btn-default" ng-click="openModal()" ng-disabled="images.length === 0 || filesProgress > 0" uib-tooltip="View metric">' +
+                                '<button type="button" class="btn btn-secondary" ng-click="openModal()" ng-disabled="images.length === 0 || filesProgress > 0" uib-tooltip="View metric">' +
                                     '<i class="fa fa-expand"></i>' +
                                 '</button>' +
                             '</li>' +
                             '<li>' +
                                 '<div class="btn-group">' +
-                                    '<button type="button" class="btn btn-default" ng-model="$parent.mode" ng-disabled="filesProgress > 0" uib-btn-radio="btn.name" ng-repeat="btn in visibleModes">' +
+                                    '<label class="btn btn-secondary mb-0" role="button" ng-model="$parent.mode" ng-disabled="filesProgress > 0" uib-btn-radio="btn.name" ng-repeat="btn in visibleModes">' +
                                         '<i class="{{btn.icon}}"></i>' +
-                                    '</button>' +
+                                    '</label>' +
                                 '</div>' +
                             '</li>' +
                         '</ul>' +

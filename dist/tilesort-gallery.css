@@ -261,12 +261,3 @@
 .image-upload-progress {
     width: 100%;
 }
-
-#image-upload-progress-bar {
-    margin-left: 0px;
-    margin-bottom: 15px;
-}
-
-.progress {
-    margin-bottom: 0px;
-}
