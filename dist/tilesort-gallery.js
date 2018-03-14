@@ -18,9 +18,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
             uploadProgress: '=',
 
             modalTpl: '=?',
-            modalCtrl: '=?',
-
-            sortable: '=?'
+            modalCtrl: '=?'
         },
         templateUrl: 'tilesort-gallery-layout-default',
         link: function link(scope, element, attrs) {
@@ -109,6 +107,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
             };
             //internal; used to build the sortable / draggable tiles
             scope.sortableOptions = {
+                scrollSpeed: 20,
                 onStart: function onStart(evt) {
                     scope._currentIndex = scope.currentIndex;
                 },
@@ -149,11 +148,9 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                 scope.openModal();
             };
 
-            // whether or not sort should be enabled
-            // alternatively, just don't load the plugin since this isn't watched
-            if (!scope.sortable) {
-                scope.sortableOptions.disabled = true;
-            }
+            scope.$watch('canEdit', function() {
+                scope.sortableOptions.disabled = !scope.canEdit; //if user cannot edit, disable sort
+            });
 
             // whether or not title / description are editable in the popup
             scope.canEdit = scope.canEdit || false;
@@ -181,19 +178,17 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
 
     // the modal
     // by default, it has the picture, an editable title and description, and close buttons
-    $templateCache.put('tilesort-modal-default', '\n      <div class="modal-header">\n        <span class="item-title uneditable" ng-if="!canEdit">{{images[currentIndex].title}}</span>\n        <a class="item-title editable" ng-if="canEdit" href editable-text="images[currentIndex].title">{{images[currentIndex].title || \'no title\'}}</a>\n        <span class="fa fa-close pull-right close" ng-click="close()"></span>\n      </div>\n      <div class="modal-body">\n        <div class="fitted-image-container-container">\n          <div class="fitted-image-container">\n            <img class="fitted-image" ng-src="{{images[currentIndex].url}}" />\n          </div>\n        </div>\n\t      <div class="item-description-container">\n          <span class="item-description uneditable" ng-if="!canEdit">{{images[currentIndex].description}}</span>\n          <a class="item-description editable" ng-if="canEdit" href editable-textarea="images[currentIndex].description">{{images[currentIndex].description || \'no description\'}}</a>\n        </div>\n      </div>\n      <div class="modal-footer">\n        <button class="btn btn-default" ng-click="close()">Close</button>\n      </div>\n    ');
+    $templateCache.put('tilesort-modal-default', '\n      <div class="modal-header">\n        <span class="item-title uneditable" ng-if="!canEdit">{{images[currentIndex].title}}</span>\n        <a class="item-title editable" ng-if="canEdit" href editable-text="images[currentIndex].title">{{images[currentIndex].title || \'no title\'}}</a>\n        <span class="fa fa-close pull-right close" ng-click="close()"></span>\n      </div>\n      <div class="modal-body">\n        <div class="fitted-image-container-container">\n          <div class="fitted-image-container">\n            <img class="fitted-image" ng-src="{{images[currentIndex].url}}" />\n          </div>\n        </div>\n\t      <div class="item-description-container">\n          <span class="item-description uneditable" ng-if="!canEdit">{{images[currentIndex].description}}</span>\n          <a class="item-description editable" ng-if="canEdit" href editable-textarea="images[currentIndex].description">{{images[currentIndex].description || \'no description\'}}</a>\n        </div>\n      </div>\n      <div class="modal-footer">\n        <button class="btn btn-secondary" ng-click="close()">Close</button>\n      </div>\n    ');
 
     // the directive layout
     // by default, this renders the buttons in the bottom left
     // and has a reasonable amount of space (responsive) for the title / desc //col-md-2 col-xs-3
     // it also has an expand button that opens the current image in a modal //class="col-md-1 col-xs-2"
     $templateCache.put('tilesort-gallery-layout-default', '\n' +
-        '<div class="row" ng-show="filesProgress > 0">' +
+        '<div class="row mb-3" ng-show="filesProgress > 0">' +
             '<div class="col">' +
-                '<div id="image-upload-progress-bar" class="nav navbar-text progress image-upload-progress">' +
-                    '<div class="progress-bar" role="progressbar" ng-style="{width: filesProgress + \'%\'}">' +
-                        '<span class="sr-only"></span>' +
-                    '</div>' +
+                '<div class="progress">' +
+                    '<div class="progress-bar" role="progressbar" ng-style="{width: filesProgress + \'%\'}"></div>' +
                 '</div>' +
             '</div>' +
         '</div>' +
@@ -218,15 +213,15 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                                 '</button>' +
                             '</li>' +
                             '<li>' +
-                                '<button type="button" class="btn btn-default" ng-click="openModal()" ng-disabled="images.length === 0 || filesProgress > 0" uib-tooltip="View metric">' +
+                                '<button type="button" class="btn btn-secondary" ng-click="openModal()" ng-disabled="images.length === 0 || filesProgress > 0" uib-tooltip="View metric">' +
                                     '<i class="fa fa-expand"></i>' +
                                 '</button>' +
                             '</li>' +
                             '<li>' +
                                 '<div class="btn-group">' +
-                                    '<button type="button" class="btn btn-default" ng-model="$parent.mode" ng-disabled="filesProgress > 0" uib-btn-radio="btn.name" ng-repeat="btn in visibleModes">' +
+                                    '<label class="btn btn-secondary mb-0" role="button" ng-model="$parent.mode" ng-disabled="filesProgress > 0" uib-btn-radio="btn.name" ng-repeat="btn in visibleModes">' +
                                         '<i class="{{btn.icon}}"></i>' +
-                                    '</button>' +
+                                    '</label>' +
                                 '</div>' +
                             '</li>' +
                         '</ul>' +
@@ -235,7 +230,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                         '<div>{{images[currentIndex].description}}</div>' +
                     '</div>' +
                     '<div class="card-block bg-faded">' +
-                        '<div id="drag-drop-container" class="panel panel-default tilesort tilesort-margin-top" readonly="true" ng-if="uploadImage && canEdit"' +
+                        '<div class="panel panel-default tilesort" readonly="true" ng-if="uploadImage && canEdit"' +
                             'ngf-drop="uploadImage($files)"' +
                             'ngf-multiple="false"' +
                             'ngf-pattern="image/*"' +
@@ -246,7 +241,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                             '>' +
                                 '<div class="panel-body tilesort-container" ng-include="\'tilesort-view-\'+mode"></div>' +
                         '</div>' +
-                        '<div id="drag-drop-container" class="panel panel-default tilesort tilesort-margin-top" readonly="true" ng-if="!(uploadImage && canEdit)">' +
+                        '<div class="panel panel-default tilesort" readonly="true" ng-if="!(uploadImage && canEdit)">' +
                             '<div class="panel-body tilesort-container" ng-include="\'tilesort-view-\'+mode"></div>' +
                         '</div>' +
                     '</div>' +
@@ -258,15 +253,41 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
     // the gallery layout
     // by default, there are niceish css transitions, left/right buttons, and
     // a reasonable amount of space to display info about the current image
-    $templateCache.put('tilesort-view-gallery', '\n      <div class="tilesort-gallery-nav">\n        <span class="tilesort-gallery-nav-item tilesort-gallery-nav-left"\n          ng-click="moveLeft()"\n          ng-show="currentIndex > 0">\n\n          <i class="fa fa-arrow-left"></i>\n        </span>\n        <span class="tilesort-gallery-nav-item tilesort-gallery-nav-right"\n          ng-click="moveRight()"\n          ng-show="currentIndex < images.length-1">\n\n          <i class="fa fa-arrow-right"></i>\n        </span>\n      </div>\n      <div class="tilesort-gallery" ng-sortable="sortableOptionsGallery">\n        <div\n          class="gallery-image-container"\n          ng-repeat="image in displayList track by $index"\n          ng-show="$index+currentIndex-1 >= 0 && $index+currentIndex-1 < images.length"\n          >\n          <img class="gallery-image"\n            ng-click="selectAndOpen($index+currentIndex-1)"\n            ng-src="{{images[$index+currentIndex-1].url}}" />\n        </div>\n\n      </div>\n    ');
+    $templateCache.put('tilesort-view-gallery', '\n' +
+        '<div class="tilesort-gallery-nav">' +
+            '<span class="tilesort-gallery-nav-item tilesort-gallery-nav-left" ng-click="moveLeft()" ng-show="currentIndex > 0">' +
+                '<i class="fa fa-arrow-left"></i>' +
+            '</span>' +
+            '<span class="tilesort-gallery-nav-item tilesort-gallery-nav-right" ng-click="moveRight()" ng-show="currentIndex < images.length-1">' +
+                '<i class="fa fa-arrow-right"></i>' +
+            '</span>' +
+        '</div>' +
+        '<div class="tilesort-gallery" ng-sortable="sortableOptionsGallery">' +
+            '<div class="gallery-image-container" ng-repeat="image in displayList track by $index" ng-show="$index+currentIndex-1 >= 0 && $index+currentIndex-1 < images.length">' +
+                '<img class="gallery-image" ng-click="selectAndOpen($index+currentIndex-1)" ng-src="{{images[$index+currentIndex-1].url}}" />' +
+            '</div>' +
+        '</div>'
+    );
 
     // the tile layout
     // by default, the tiles have a tooltip for their title
     // and they're also drag/drop sortable
     // the active one is indicated by a glowing blue
-    $templateCache.put('tilesort-view-tiles', '\n      <div class="tilesort-tiles" ng-sortable="sortableOptions">\n        <div class="tilesort-tile"\n          ng-repeat="tile in images"\n          ng-click="setIndex($index)"\n          ng-class="{active: currentIndex === $index}">\n\n          <img class="gallery-image" ng-src="{{images[$index].url}}" />\n        </div>\n      </div>\n    ');
+    $templateCache.put('tilesort-view-tiles', '\n' +
+        '<div class="tilesort-tiles" ng-sortable="sortableOptions">' +
+            '<div class="tilesort-tile" ng-repeat="tile in images" ng-click="setIndex($index)" ng-class="{active: currentIndex === $index}">' +
+                '<img class="gallery-image" ng-src="{{images[$index].url}}" />' +
+            '</div>' +
+        '</div>'
+    );
 
-    $templateCache.put('tilesort-view-tiles-large', '\n      <div class="tilesort-tiles" ng-sortable="sortableOptions">\n        <div class="tilesort-tile-large"\n          ng-repeat="tile in images"\n          ng-click="setIndex($index)"\n          ng-class="{active: currentIndex === $index}">\n\n          <img class="gallery-image" ng-src="{{images[$index].url}}" />\n        </div>\n      </div>\n    ');
+    $templateCache.put('tilesort-view-tiles-large', '\n' +
+        '<div class="tilesort-tiles" ng-sortable="sortableOptions">' +
+            '<div class="tilesort-tile-large" ng-repeat="tile in images" ng-click="setIndex($index)" ng-class="{active: currentIndex === $index}">' +
+                '<img class="gallery-image" ng-src="{{images[$index].url}}" />' +
+            '</div>' +
+        '</div>'
+    );
 }]);
 
 // optionally load xeditable if it's there, and set the theme to bs3
