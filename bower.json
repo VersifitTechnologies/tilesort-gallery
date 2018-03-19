@@ -22,7 +22,7 @@
     "tests"
   ],
   "dependencies": {
-    "angular-bootstrap": "~2.5.0"
+    "angular-bootstrap": "2.5.0"
   },
   "resolutions": {
     "angular": "1.4.14"
