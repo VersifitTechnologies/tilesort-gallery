@@ -11,6 +11,9 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
             visibleModes: '=?',
             startIndex: '=?',
             images: '=',
+            galleryImages: '=',
+            galleryImagesTpl: '=',
+            galleryImagesCtrl: '=',
 
             canEdit: '=?',
 
@@ -142,6 +145,24 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                 });
             };
 
+            scope.openImageGallery = function () {
+                $uibModal.open({
+                    scope: scope,
+                    controller: scope.galleryImagesCtrl,
+                    templateUrl: scope.galleryImagesTpl,
+                    backdrop: true,
+                    size: 'lg',
+                    windowClass: 'tilesort-modal modal-fit',
+                    resolve: {
+                        scope: function () {
+                            return _.cloneDeep(scope);
+                        }
+                    }
+                }).result.then(function(response) {
+                    console.log('close', response);
+                });
+            };
+
             // used by the gallery to allow selection of other images and opening the modal
             scope.selectAndOpen = function (index) {
                 scope.setIndex(index);
@@ -215,6 +236,13 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                             '<li>' +
                                 '<button type="button" class="btn btn-secondary" ng-click="openModal()" ng-disabled="images.length === 0 || filesProgress > 0" uib-tooltip="View metric">' +
                                     '<i class="fa fa-expand"></i>' +
+                                '</button>' +
+                            '</li>' +
+                            '<li>' +
+                                '<button type="button" class="btn btn-secondary" ng-click="openImageGallery()" ng-disabled="filesProgress > 0" uib-tooltip="Image gallery">' +
+                                    '<svg class="icon" width="14" height="14" fill="#5b7482">' +
+                                        '<use xlink:href="#shape-share"></use>' +
+                                    '</svg>' +
                                 '</button>' +
                             '</li>' +
                             '<li>' +
