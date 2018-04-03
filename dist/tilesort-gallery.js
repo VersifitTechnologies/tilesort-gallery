@@ -229,7 +229,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                     '<div class="card-block bg-faded" ng-if="images[currentIndex].description">' +
                         '<div>{{images[currentIndex].description}}</div>' +
                     '</div>' +
-                    '<div class="card-block bg-faded">' +
+                    '<div class="card-block image-gallery-height padding-left-14 padding-right-14">' +
                         '<div class="panel panel-default tilesort" readonly="true" ng-if="uploadImage && canEdit"' +
                             'ngf-drop="uploadImage($files)"' +
                             'ngf-multiple="false"' +
@@ -256,15 +256,19 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
     $templateCache.put('tilesort-view-gallery', '\n' +
         '<div class="tilesort-gallery-nav">' +
             '<span class="tilesort-gallery-nav-item tilesort-gallery-nav-left" ng-click="moveLeft()" ng-show="currentIndex > 0">' +
-                '<i class="fa fa-arrow-left"></i>' +
+                '<svg class="icon position-arrow" width="14" height="14" fill="#5b7482">' +
+                    '<use xlink:href="#shape-arrow-left"></use>' +
+                '</svg>' +
             '</span>' +
             '<span class="tilesort-gallery-nav-item tilesort-gallery-nav-right" ng-click="moveRight()" ng-show="currentIndex < images.length-1">' +
-                '<i class="fa fa-arrow-right"></i>' +
+                '<svg class="icon position-arrow" width="14" height="14" fill="#5b7482">' +
+                    '<use xlink:href="#shape-arrow-right"></use>' +
+                '</svg>' +
             '</span>' +
         '</div>' +
         '<div class="tilesort-gallery" ng-sortable="sortableOptionsGallery">' +
             '<div class="gallery-image-container" ng-repeat="image in displayList track by $index" ng-show="$index+currentIndex-1 >= 0 && $index+currentIndex-1 < images.length">' +
-                '<img class="gallery-image" ng-click="selectAndOpen($index+currentIndex-1)" ng-src="{{images[$index+currentIndex-1].url}}" />' +
+                '<img class="gallery-image image-box-shadow" ng-click="selectAndOpen($index+currentIndex-1)" ng-src="{{images[$index+currentIndex-1].url}}" />' +
             '</div>' +
         '</div>'
     );
