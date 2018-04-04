@@ -213,29 +213,29 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                                     'ngf-select-disabled="!canEdit"' +
                                     'ngf-drop-available="false"' +
                                     '>' +
-                                    '<svg class="icon" width="18" height="18" fill="#5b7482">' +
-                                        '<use xlink:href="#shape-edit"></use>' +
+                                    '<svg class="icon" width="20" height="20" fill="#5b7482" transform="translate(2.000000, 0.000000)">' +
+                                        '<use xlink:href="#shape-icon_upload"></use>' +
                                     '</svg>' +
                                 '</button>' +
                             '</li>' +
                             '<li class="padding-left-48">' +
                                 '<button type="button" class="btn-toggle-state" ng-click="openModal()" ng-disabled="images.length === 0 || filesProgress > 0" uib-tooltip="View metric" tooltip-append-to-body="true">' +
                                     '<svg class="icon" width="18" height="18" fill="#5b7482">' +
-                                        '<use xlink:href="#shape-edit"></use>' +
+                                        '<use xlink:href="#shape-share"></use>' +
                                     '</svg>' +
                                 '</button>' +
                             '</li>' +
                             '<li class="pl-5">' +
                                 '<button type="button" class="btn-toggle-state" ng-click="changeMode(\'tiles\')" ng-disabled="filesProgress > 0" uib-tooltip="Sort mode" tooltip-append-to-body="true">' +
-                                    '<svg class="icon" width="18" height="18" fill="#5b7482">' +
-                                        '<use xlink:href="#shape-edit"></use>' +
+                                    '<svg class="icon" width="22" height="22" fill="#5b7482">' +
+                                        '<use xlink:href="#shape-icon_move_arrows"></use>' +
                                     '</svg>' +
                                 '</button>' +
                             '</li>' +
                             '<li class="pl-5">' +
                                 '<button type="button" class="btn-toggle-state" ng-click="changeMode(\'gallery\')" ng-disabled="filesProgress > 0" uib-tooltip="View mode" tooltip-append-to-body="true">' +
-                                    '<svg class="icon" width="18" height="18" fill="#5b7482">' +
-                                        '<use xlink:href="#shape-edit"></use>' +
+                                    '<svg class="icon" width="20" height="20" fill="#5b7482" transform="translate(0.000000, 2.000000)">' +
+                                        '<use xlink:href="#shape-icon_view_carousel"></use>' +
                                     '</svg>' +
                                 '</button>' +
                             '</li>' +
