@@ -181,6 +181,10 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                 return canEdit && scope.filesProgress === 0;
             };
 
+            scope.changeMode = function(mode) {
+                scope.mode = mode;
+            };
+
             // if xeditable isn't available, turn editing off
             // an error will be thrown anyway if xeditable is not present
             // and canEdit is set to true, but this cleans up the display
@@ -219,9 +223,9 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                 '<div class="card card-border metric-container">' +
                     '<header class="card-header">' +
                         '<h4 class="card-title">{{images[currentIndex].title}}</h4>' +
-                        '<ul class="card-actions">' +
+                        '<ul class="card-actions pl-4">' +
                             '<li>' +
-                                '<button type="button" class="btn btn-primary" ng-disabled="!canUpload(canEdit)" uib-tooltip="Upload" ng-if="uploadImage && canEdit"' +
+                                '<button type="button" class="btn-toggle-state" ng-disabled="!canUpload(canEdit)" uib-tooltip="Upload"  tooltip-append-to-body="true" ng-if="uploadImage && canEdit"' +
                                     'ngf-select="uploadImage($files)"' +
                                     'ngf-multiple="false"' +
                                     'ngf-pattern="image/*"' +
@@ -230,27 +234,31 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                                     'ngf-select-disabled="!canEdit"' +
                                     'ngf-drop-available="false"' +
                                     '>' +
-                                    '<i class="fa fa-upload"></i>' +
-                                '</button>' +
-                            '</li>' +
-                            '<li>' +
-                                '<button type="button" class="btn btn-secondary" ng-click="openModal()" ng-disabled="images.length === 0 || filesProgress > 0" uib-tooltip="View metric">' +
-                                    '<i class="fa fa-expand"></i>' +
-                                '</button>' +
-                            '</li>' +
-                            '<li>' +
-                                '<button type="button" class="btn btn-secondary" ng-click="openImageGallery()" ng-disabled="filesProgress > 0" uib-tooltip="Image gallery">' +
-                                    '<svg class="icon" width="14" height="14" fill="#5b7482">' +
-                                        '<use xlink:href="#shape-share"></use>' +
+                                    '<svg class="icon" width="18" height="18" fill="#5b7482">' +
+                                        '<use xlink:href="#shape-edit"></use>' +
                                     '</svg>' +
                                 '</button>' +
                             '</li>' +
-                            '<li>' +
-                                '<div class="btn-group">' +
-                                    '<label class="btn btn-secondary mb-0" role="button" ng-model="$parent.mode" ng-disabled="filesProgress > 0" uib-btn-radio="btn.name" ng-repeat="btn in visibleModes">' +
-                                        '<i class="{{btn.icon}}"></i>' +
-                                    '</label>' +
-                                '</div>' +
+                            '<li class="padding-left-48">' +
+                                '<button type="button" class="btn-toggle-state" ng-click="openModal()" ng-disabled="images.length === 0 || filesProgress > 0" uib-tooltip="View metric" tooltip-append-to-body="true">' +
+                                    '<svg class="icon" width="18" height="18" fill="#5b7482">' +
+                                        '<use xlink:href="#shape-edit"></use>' +
+                                    '</svg>' +
+                                '</button>' +
+                            '</li>' +
+                            '<li class="pl-5">' +
+                                '<button type="button" class="btn-toggle-state" ng-click="changeMode(\'tiles\')" ng-disabled="filesProgress > 0" uib-tooltip="Sort mode" tooltip-append-to-body="true">' +
+                                    '<svg class="icon" width="18" height="18" fill="#5b7482">' +
+                                        '<use xlink:href="#shape-edit"></use>' +
+                                    '</svg>' +
+                                '</button>' +
+                            '</li>' +
+                            '<li class="pl-5">' +
+                                '<button type="button" class="btn-toggle-state" ng-click="changeMode(\'gallery\')" ng-disabled="filesProgress > 0" uib-tooltip="View mode" tooltip-append-to-body="true">' +
+                                    '<svg class="icon" width="18" height="18" fill="#5b7482">' +
+                                        '<use xlink:href="#shape-edit"></use>' +
+                                    '</svg>' +
+                                '</button>' +
                             '</li>' +
                         '</ul>' +
                     '</header>' +
