@@ -239,6 +239,13 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                                     '</svg>' +
                                 '</button>' +
                             '</li>' +
+                            '<li class="pl-5">' +
+                                '<button type="button" class="btn-toggle-state" ng-click="openImageGallery()" ng-disabled="filesProgress > 0" uib-tooltip="Image Gallery" tooltip-append-to-body="true">' +
+                                    '<svg class="icon" width="18" height="18" fill="#5b7482">' +
+                                        '<use xlink:href="#shape-edit"></use>' +
+                                    '</svg>' +
+                                '</button>' +
+                            '</li>' +
                             '<li class="padding-left-48">' +
                                 '<button type="button" class="btn-toggle-state" ng-click="openModal()" ng-disabled="images.length === 0 || filesProgress > 0" uib-tooltip="View metric" tooltip-append-to-body="true">' +
                                     '<svg class="icon" width="18" height="18" fill="#5b7482">' +
