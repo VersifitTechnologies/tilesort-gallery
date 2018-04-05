@@ -241,8 +241,8 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                             '</li>' +
                             '<li class="pl-5">' +
                                 '<button type="button" class="btn-toggle-state" ng-click="openImageGallery()" ng-disabled="filesProgress > 0" uib-tooltip="Image Gallery" tooltip-append-to-body="true">' +
-                                    '<svg class="icon" width="18" height="18" fill="#5b7482">' +
-                                        '<use xlink:href="#shape-edit"></use>' +
+                                    '<svg class="icon" width="21" height="21" fill="#5b7482" transform="translate(2.000000, 0.000000)">' +
+                                        '<use xlink:href="#shape-icon_image"></use>' +
                                     '</svg>' +
                                 '</button>' +
                             '</li>' +
