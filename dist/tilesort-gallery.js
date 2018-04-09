@@ -124,7 +124,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
             };
 
             // internal; open the modal with some sensible defaults
-            scope.openModal = function () {
+            scope.openModal = function (image) {
                 $uibModal.open({
                     scope: scope,
                     controller: scope.modalCtrl,
@@ -135,6 +135,9 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                     resolve: {
                         scope: function () {
                             return _.cloneDeep(scope);
+                        },
+                        image: function() {
+                            return image;
                         }
                     }
                 }).result.then(function(response) {
@@ -145,7 +148,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
             // used by the gallery to allow selection of other images and opening the modal
             scope.selectAndOpen = function (index) {
                 scope.setIndex(index);
-                scope.openModal();
+                scope.openModal(scope.images[scope.currentIndex]);
             };
 
             scope.$watch('canEdit', function() {
@@ -219,7 +222,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                                 '</button>' +
                             '</li>' +
                             '<li class="padding-left-48">' +
-                                '<button type="button" class="btn-toggle-state" ng-click="openModal()" ng-disabled="images.length === 0 || filesProgress > 0" uib-tooltip="View metric" tooltip-append-to-body="true">' +
+                                '<button type="button" class="btn-toggle-state" ng-click="openModal(images[currentIndex])" ng-disabled="images.length === 0 || filesProgress > 0" uib-tooltip="View image" tooltip-append-to-body="true">' +
                                     '<svg class="icon" width="18" height="18" fill="#5b7482">' +
                                         '<use xlink:href="#shape-share"></use>' +
                                     '</svg>' +
