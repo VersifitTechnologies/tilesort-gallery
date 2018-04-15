@@ -11,6 +11,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
             visibleModes: '=?',
             startIndex: '=?',
             images: '=',
+            layoutId: '=?',
 
             canEdit: '=?',
 
@@ -22,6 +23,8 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
         },
         templateUrl: 'tilesort-gallery-layout-default',
         link: function link(scope, element, attrs) {
+            scope.filteredImages = []; //images filtered based on passed image id
+
             scope.uploadImage = scope.uploadImage || false;
             scope.filesProgress = scope.uploadProgress;
             scope.$watch('uploadProgress', function() { //watch file upload progress when upload value increases
@@ -47,15 +50,15 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
 
             // build the display list for animations to work properly
             var resetDisplayList = function resetDisplayList() {
-                var list = [scope.images[scope.currentIndex]];
+                var list = [scope.filteredImages[scope.currentIndex]];
                 var iterable = Math.floor(MAX_ITEMS / 2);
 
                 for (var i = scope.currentIndex - 1; i >= scope.currentIndex - iterable; i--) {
-                    list.unshift(scope.images[i]);
+                    list.unshift(scope.filteredImages[i]);
                 }
 
                 for (var i = scope.currentIndex + 1; i <= scope.currentIndex + iterable; i++) {
-                    list.push(scope.images[i]);
+                    list.push(scope.filteredImages[i]);
                 }
 
                 scope.displayList = list;
@@ -68,16 +71,16 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                 scope.currentIndex = Math.max(0, scope.currentIndex - 1);
 
                 scope.displayList.pop();
-                scope.displayList.unshift(scope.images[scope.currentIndex - 1]);
+                scope.displayList.unshift(scope.filteredImages[scope.currentIndex - 1]);
             };
 
             // hit the right button, rebuild the display list
             scope.moveRight = function () {
-                if (scope.currentIndex === scope.images.length - 1) return;
-                scope.currentIndex = Math.min(scope.images.length - 1, scope.currentIndex + 1);
+                if (scope.currentIndex === scope.filteredImages.length - 1) return;
+                scope.currentIndex = Math.min(scope.filteredImages.length - 1, scope.currentIndex + 1);
 
                 scope.displayList.shift();
-                scope.displayList.push(scope.images[scope.currentIndex + 1]);
+                scope.displayList.push(scope.filteredImages[scope.currentIndex + 1]);
             };
 
             // flat-out set the index and reset the display list
@@ -87,6 +90,8 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
             };
 
             scope.onEnd = function (evt) {
+                if (evt.newIndex === undefined) { return ; } //if sorting order wasn't updated, don't update index
+
                 // move the currently active tile to compensate for sorting
                 if (evt.oldIndex < scope._currentIndex && evt.newIndex >= scope._currentIndex) {
                     scope.currentIndex--;
@@ -101,6 +106,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                 }
 
                 scope.$root.$emit('tilesort-resort-item-moved', {
+                    filteredImages: scope.filteredImages,
                     newIndex: evt.newIndex,
                     oldIndex: evt.oldIndex
                 });
@@ -125,6 +131,8 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
 
             // internal; open the modal with some sensible defaults
             scope.openModal = function (image) {
+                if (scope.filteredImages.length === 0) { return ; } //if no images, don't open modal
+
                 $uibModal.open({
                     scope: scope,
                     controller: scope.modalCtrl,
@@ -140,15 +148,15 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                             return image;
                         }
                     }
-                }).result.then(function(response) {
+                })/*.result.then(function(response) {
                     scope.images[scope.currentIndex].title = response;
-                });
+                })*/;
             };
 
             // used by the gallery to allow selection of other images and opening the modal
             scope.selectAndOpen = function (index) {
                 scope.setIndex(index);
-                scope.openModal(scope.images[scope.currentIndex]);
+                scope.openModal(scope.filteredImages[scope.currentIndex]);
             };
 
             scope.$watch('canEdit', function() {
@@ -175,6 +183,14 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
             }
 
             scope.$watch('images', function (newVal) {
+                if (scope.layoutId) {
+                    scope.filteredImages = _.filter(scope.images, function(image) {
+                        return image.layoutitemid === scope.layoutId;
+                    });
+                } else { //if no layout id is specified, display all images
+                    scope.filteredImages = scope.images;
+                }
+
                 if (scope.currentIndex || Array.isArray(newVal) && newVal.length === 0 || typeof newVal === 'undefined') return;
                 // initialize the directive
                 scope.setIndex(scope.startIndex || 0);
@@ -204,11 +220,11 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
             '<div class="col">' +
                 '<div class="card card-border metric-container">' +
                     '<header class="card-header">' +
-                        '<h4 class="card-title">{{images[currentIndex].title}}</h4>' +
+                        '<h4 class="card-title">{{filteredImages[currentIndex].title}}</h4>' +
                         '<ul class="card-actions pl-4">' +
                             '<li>' +
                                 '<button type="button" class="btn-toggle-state" ng-disabled="!canUpload(canEdit)" uib-tooltip="Upload"  tooltip-append-to-body="true" ng-if="uploadImage && canEdit"' +
-                                    'ngf-select="uploadImage($files)"' +
+                                    'ngf-select="uploadImage($files, layoutId)"' +
                                     'ngf-multiple="false"' +
                                     'ngf-pattern="image/*"' +
                                     'ngf-accept="\'image/*\'"' +
@@ -222,21 +238,21 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                                 '</button>' +
                             '</li>' +
                             '<li class="padding-left-48">' +
-                                '<button type="button" class="btn-toggle-state" ng-click="openModal(images[currentIndex])" ng-disabled="images.length === 0 || filesProgress > 0" uib-tooltip="View image" tooltip-append-to-body="true">' +
+                                '<button type="button" class="btn-toggle-state" ng-click="openModal(filteredImages[currentIndex])" ng-disabled="filesProgress > 0" uib-tooltip="Properties" tooltip-append-to-body="true">' +
                                     '<svg class="icon" width="18" height="18" fill="#5b7482">' +
                                         '<use xlink:href="#shape-share"></use>' +
                                     '</svg>' +
                                 '</button>' +
                             '</li>' +
                             '<li class="pl-5">' +
-                                '<button type="button" class="btn-toggle-state" ng-click="changeMode(\'tiles\')" ng-disabled="filesProgress > 0" uib-tooltip="Sort mode" tooltip-append-to-body="true">' +
+                                '<button type="button" class="btn-toggle-state" ng-click="changeMode(\'tiles\')" ng-disabled="filesProgress > 0" uib-tooltip="Re-order" tooltip-append-to-body="true">' +
                                     '<svg class="icon" width="22" height="22" fill="#5b7482">' +
                                         '<use xlink:href="#shape-icon_move_arrows"></use>' +
                                     '</svg>' +
                                 '</button>' +
                             '</li>' +
                             '<li class="pl-5">' +
-                                '<button type="button" class="btn-toggle-state" ng-click="changeMode(\'gallery\')" ng-disabled="filesProgress > 0" uib-tooltip="View mode" tooltip-append-to-body="true">' +
+                                '<button type="button" class="btn-toggle-state" ng-click="changeMode(\'gallery\')" ng-disabled="filesProgress > 0" uib-tooltip="View Only" tooltip-append-to-body="true">' +
                                     '<svg class="icon" width="20" height="20" fill="#5b7482" transform="translate(0.000000, 2.000000)">' +
                                         '<use xlink:href="#shape-icon_view_carousel"></use>' +
                                     '</svg>' +
@@ -244,12 +260,12 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                             '</li>' +
                         '</ul>' +
                     '</header>' +
-                    '<div class="card-block bg-faded" ng-if="images[currentIndex].description">' +
-                        '<div>{{images[currentIndex].description}}</div>' +
+                    '<div class="card-block bg-faded" ng-if="filteredImages[currentIndex].description">' +
+                        '<div>{{filteredImages[currentIndex].description}}</div>' +
                     '</div>' +
-                    '<div class="card-block image-gallery-height padding-left-14 padding-right-14">' +
+                    '<div class="card-block image-gallery-height padding-left-14 padding-right-14" ng-class="{\'image-gallery-height-no-images\': filteredImages.length === 0}">' +
                         '<div class="panel panel-default tilesort" readonly="true" ng-if="uploadImage && canEdit"' +
-                            'ngf-drop="uploadImage($files)"' +
+                            'ngf-drop="uploadImage($files, layoutId)"' +
                             'ngf-multiple="false"' +
                             'ngf-pattern="image/*"' +
                             'ngf-accept="\'image/*\'"' +
@@ -278,15 +294,18 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                     '<use xlink:href="#shape-arrow-left"></use>' +
                 '</svg>' +
             '</span>' +
-            '<span class="tilesort-gallery-nav-item tilesort-gallery-nav-right" ng-click="moveRight()" ng-show="currentIndex < images.length-1">' +
+            '<span class="tilesort-gallery-nav-item tilesort-gallery-nav-right" ng-click="moveRight()" ng-show="currentIndex < filteredImages.length-1">' +
                 '<svg class="icon position-arrow" width="14" height="14" fill="#5b7482">' +
                     '<use xlink:href="#shape-arrow-right"></use>' +
                 '</svg>' +
             '</span>' +
         '</div>' +
         '<div class="tilesort-gallery" ng-sortable="sortableOptionsGallery">' +
-            '<div class="gallery-image-container" ng-repeat="image in displayList track by $index" ng-show="$index+currentIndex-1 >= 0 && $index+currentIndex-1 < images.length">' +
-                '<img class="gallery-image image-box-shadow" ng-click="selectAndOpen($index+currentIndex-1)" ng-src="{{images[$index+currentIndex-1].url}}" />' +
+            '<div class="gallery-image-container" ng-repeat="image in displayList track by $index" ng-show="$index+currentIndex-1 >= 0 && $index+currentIndex-1 < filteredImages.length">' +
+                '<img class="gallery-image image-box-shadow" ng-click="selectAndOpen($index+currentIndex-1)" ng-src="{{filteredImages[$index+currentIndex-1].url}}" />' +
+            '</div>' +
+            '<div class="text-center margin-top-25" ng-if="filteredImages.length === 0">' +
+                '<div>There are no images.</div>' +
             '</div>' +
         '</div>'
     );
@@ -297,16 +316,19 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
     // the active one is indicated by a glowing blue
     $templateCache.put('tilesort-view-tiles', '\n' +
         '<div class="tilesort-tiles" ng-sortable="sortableOptions">' +
-            '<div class="tilesort-tile" ng-repeat="tile in images" ng-click="setIndex($index)" ng-class="{active: currentIndex === $index}">' +
-                '<img class="gallery-image" ng-src="{{images[$index].url}}" />' +
+            '<div class="tilesort-tile" ng-repeat="tile in filteredImages" ng-click="setIndex($index)" ng-class="{active: currentIndex === $index, \'box-shadow\': currentIndex !== $index}">' +
+                '<img class="gallery-image" ng-src="{{filteredImages[$index].url}}" />' +
             '</div>' +
+        '</div>' +
+        '<div class="text-center margin-top-25" ng-if="filteredImages.length === 0">' +
+            '<div>There are no images.</div>' +
         '</div>'
     );
 
     $templateCache.put('tilesort-view-tiles-large', '\n' +
         '<div class="tilesort-tiles" ng-sortable="sortableOptions">' +
-            '<div class="tilesort-tile-large" ng-repeat="tile in images" ng-click="setIndex($index)" ng-class="{active: currentIndex === $index}">' +
-                '<img class="gallery-image" ng-src="{{images[$index].url}}" />' +
+            '<div class="tilesort-tile-large" ng-repeat="tile in filteredImages" ng-click="setIndex($index)" ng-class="{active: currentIndex === $index}">' +
+                '<img class="gallery-image" ng-src="{{filteredImages[$index].url}}" />' +
             '</div>' +
         '</div>'
     );
