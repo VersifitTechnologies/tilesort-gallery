@@ -166,7 +166,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                     windowClass: 'tilesort-modal modal-fit',
                     resolve: {
                         scope: function () {
-                            return _.cloneDeep(scope);
+                            return scope;
                         }
                     }
                 }).result.then(function(response) {
