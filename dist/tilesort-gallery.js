@@ -10,8 +10,8 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
             mode: '=?',
             visibleModes: '=?',
             startIndex: '=?',
+            planName: '=',
             images: '=',
-            galleryImages: '=',
             galleryImagesTpl: '=',
             galleryImagesCtrl: '=',
             layoutId: '=?',
@@ -204,6 +204,9 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
             }
 
             scope.$watch('images', function (newVal) {
+                //set plan name when Plan data has returned from back-end
+                scope.planName = scope.planName;
+
                 if (scope.layoutId) {
                     scope.filteredImages = _.filter(scope.images, function(image) {
                         return image.layoutitemid === scope.layoutId;
