@@ -12,8 +12,8 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
             startIndex: '=?',
             planName: '=',
             images: '=',
-            galleryImagesTpl: '=',
-            galleryImagesCtrl: '=',
+            imageGalleryTpl: '=',
+            imageGalleryCtrl: '=',
             layoutId: '=?',
 
             canEdit: '=?',
@@ -159,19 +159,17 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
             scope.openImageGallery = function () {
                 $uibModal.open({
                     scope: scope,
-                    controller: scope.galleryImagesCtrl,
-                    templateUrl: scope.galleryImagesTpl,
+                    controller: scope.imageGalleryCtrl,
+                    templateUrl: scope.imageGalleryTpl,
                     backdrop: true,
                     size: 'lg',
-                    windowClass: 'tilesort-modal modal-fit',
+                    windowClass: 'tilesort-modal modal-fit fix-modal-content',
                     resolve: {
                         scope: function () {
                             return scope;
                         }
                     }
-                }).result.then(function(response) {
-                    console.log('close', response);
-                });
+                })
             };
 
             // used by the gallery to allow selection of other images and opening the modal

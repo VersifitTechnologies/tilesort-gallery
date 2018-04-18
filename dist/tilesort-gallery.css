@@ -21,6 +21,12 @@
   top: 50%;
   transform: translateY(-50%);
 }
+
+.fix-modal-content .modal-content {
+    display: inherit !important;
+    display: initial;
+}
+
 /*.tilesort-modal .modal-body {
   padding: 0;
 }*/
