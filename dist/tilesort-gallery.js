@@ -2,7 +2,7 @@
 
 angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtrl', ['$scope', '$uibModalInstance', function ($scope, $uibModalInstance) {
     $scope.close = $uibModalInstance.close;
-}]).directive('tilesortGallery', ['$uibModal', '$injector', function ($uibModal, $injector) {
+}]).directive('tilesortGallery', ['$uibModal', '$injector', '$http', '$timeout', '$state', 'Upload', 'baseURL', 'urlParser', 'URLS', 'notificationService', function ($uibModal, $injector, $http, $timeout, $state, Upload, baseURL, urlParser, URLS, PNotify) {
 
     return {
         restrict: 'AE',
@@ -18,21 +18,18 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
 
             canEdit: '=?',
 
-            uploadImage: '=?',
-            uploadProgress: '=',
+            refreshImages: '=',
 
             modalTpl: '=?',
             modalCtrl: '=?'
         },
         templateUrl: 'tilesort-gallery-layout-default',
         link: function link(scope, element, attrs) {
+            scope.params = urlParser.search($state.params);
+
             scope.filteredImages = []; //images filtered based on passed image id
 
-            scope.uploadImage = scope.uploadImage || false;
-            scope.filesProgress = scope.uploadProgress;
-            scope.$watch('uploadProgress', function() { //watch file upload progress when upload value increases
-                scope.filesProgress = scope.uploadProgress;
-            });
+            scope.filesProgress = 0; //keeps track of the image uploading progress
 
             // the gallery mode -- by default, only gallery and tiles are available
             scope.mode = scope.mode || 'gallery';
@@ -114,6 +111,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                     oldIndex: evt.oldIndex
                 });
             };
+
             //internal; used to build the sortable / draggable tiles
             scope.sortableOptions = {
                 scrollSpeed: 20,
@@ -178,12 +176,86 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                 scope.openModal(scope.filteredImages[scope.currentIndex]);
             };
 
+            //this function allows multiple image uploading and is sent to the tilesort-gallery directive
+            scope.uploadImage = function(inFiles, layoutId) {
+                if (inFiles.length === 0) { return ; } //if no files are being uploaded, cancel upload
+
+                var numFilesUploaded = 0; //keep track of how many files has been uploaded (used to know when last image has been reached to refresh images)
+                var files = [];
+                if (inFiles instanceof Array)
+                    files = inFiles;
+                else if (inFiles)
+                    files[0] = inFiles;
+
+                _.forEach(files, function(file) {
+                    Upload.upload({
+                        url: baseURL + '/ngFileUpload/file/UserForms',
+                        data: { file: file},
+                        resumeChunkSize: '512KB'
+                    }).then(function (response) {
+                        $timeout(function () {
+                            scope.errorMsg1 = '';
+
+                            var params = {sys_json_data: _.cloneDeep(scope.params)};
+
+                            if (!params.sys_json_data.sys_posted_values) {
+                                params.sys_json_data.sys_posted_values = {};
+                            }
+
+                            //assign layout Id to the image file so that we know which image listing this image belongs to
+                            params.sys_json_data.sys_posted_values.layoutitemid = layoutId;
+                            params.sys_json_data.fileinfo = response.data;
+
+                            $http.put(URLS.image, params).then(function () {
+                                numFilesUploaded = numFilesUploaded + 1;
+
+                                //refresh images only when the last file has been reached
+                                if (numFilesUploaded === files.length) {
+                                    scope.refreshImages(true).then(res => { //refresh images
+                                        scope.images.length = 0;
+                                        [].push.apply(scope.images, res.data.images);
+                                    });
+
+                                    $timeout(function() {
+                                        scope.filesProgress = 0;
+                                    }, 1000);
+                                }
+                            });
+                        });
+                    }, function (response) {
+                        numFilesUploaded = numFilesUploaded + 1;
+
+                        //refresh images only when the last file has been reached
+                        if (numFilesUploaded === files.length) {
+                            scope.refreshImages(true).then(res => { //refresh images
+                                scope.images.length = 0;
+                                [].push.apply(scope.images, res.data.images);
+                            });
+
+                            $timeout(function() {
+                                scope.filesProgress = 0;
+                            }, 1000);
+                        }
+
+                        if (response.status > 0){
+                            //Call pnotify here
+                            PNotify.notify({
+                                title: response.data.errorLabel,
+                                text: response.data.errorMessage,
+                                type: 'error'
+                            });
+                        }
+                    }, function (evt) {
+                        if (evt.type === 'progress' || evt.type === 'load')
+                            scope.filesProgress = Math.min(100,parseInt(100.0 * evt.loaded / evt.total ));
+                    });
+                });
+            };
+
             scope.$watch('canEdit', function() {
                 scope.sortableOptions.disabled = !scope.canEdit; //if user cannot edit, disable sort
+                scope.canEdit = scope.canEdit;
             });
-
-            // whether or not title / description are editable in the popup
-            scope.canEdit = scope.canEdit || false;
 
             scope.canUpload = function(canEdit) {
                 //They can upload if they have edit permission and an upload isn't happeneing already
@@ -201,7 +273,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                 scope.canEdit = false;
             }
 
-            scope.$watch('images', function (newVal) {
+            scope.$watchCollection('images', function (newVal) {
                 //set plan name when Plan data has returned from back-end
                 scope.planName = scope.planName;
 
