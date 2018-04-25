@@ -364,7 +364,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                     '<div class="card-block bg-faded" ng-if="filteredImages[currentIndex].description">' +
                         '<div>{{filteredImages[currentIndex].description}}</div>' +
                     '</div>' +
-                    '<div class="card-block image-gallery-height padding-left-14 padding-right-14" ng-class="{\'image-gallery-height-no-images\': filteredImages.length === 0}">' +
+                    '<div class="card-block image-gallery-height overflow-hidden padding-left-14 padding-right-14" ng-class="{\'image-gallery-height-no-images\': filteredImages.length === 0}">' +
                         '<div class="panel panel-default tilesort" readonly="true" ng-if="uploadImage && canEdit"' +
                             'ngf-drop="uploadImage($files, layoutId)"' +
                             'ngf-multiple="false"' +
