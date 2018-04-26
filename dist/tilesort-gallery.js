@@ -418,6 +418,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
     $templateCache.put('tilesort-view-tiles', '\n' +
         '<div class="tilesort-tiles" ng-sortable="sortableOptions">' +
             '<div class="tilesort-tile" ng-repeat="tile in filteredImages" ng-click="setIndex($index)" ng-class="{active: currentIndex === $index, \'box-shadow\': currentIndex !== $index}">' +
+                '<span class="center-image"></span>'+
                 '<img class="gallery-image" ng-src="{{filteredImages[$index].url}}" />' +
             '</div>' +
         '</div>' +
