@@ -132,7 +132,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
 
             // internal; open the modal with some sensible defaults
             scope.openModal = function (image) {
-                if (scope.filteredImages.length === 0) { return ; } //if no images, don't open modal
+                if (scope.images.length === 0 || typeof(image) === 'undefined') { return ; } //if no images, don't open modal
 
                 $uibModal.open({
                     scope: scope,
@@ -402,7 +402,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
             '</span>' +
         '</div>' +
         '<div class="tilesort-gallery" ng-sortable="sortableOptionsGallery">' +
-            '<div class="gallery-image-container" ng-repeat="image in displayList track by $index" ng-class="{\'cursor\': ($index+currentIndex-1 >= 0 && $index+currentIndex-1 < filteredImages.length) ? \'pointer\' : \'auto\'}">' +
+            '<div class="gallery-image-container" ng-repeat="image in displayList track by $index" ng-show="filteredImages.length !== 0" ng-class="{\'cursor\': ($index+currentIndex-1 >= 0 && $index+currentIndex-1 < filteredImages.length) ? \'pointer\' : \'auto\'}">' +
                 '<img class="gallery-image image-box-shadow" ng-click="selectAndOpen($index+currentIndex-1)" ng-show="$index+currentIndex-1 >= 0 && $index+currentIndex-1 < filteredImages.length" ng-src="{{filteredImages[$index+currentIndex-1].url}}" />' +
             '</div>' +
             '<div class="text-center margin-top-25" ng-if="filteredImages.length === 0">' +
