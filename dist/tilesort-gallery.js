@@ -402,8 +402,8 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
             '</span>' +
         '</div>' +
         '<div class="tilesort-gallery" ng-sortable="sortableOptionsGallery">' +
-            '<div class="gallery-image-container" ng-repeat="image in displayList track by $index" ng-show="$index+currentIndex-1 >= 0 && $index+currentIndex-1 < filteredImages.length">' +
-                '<img class="gallery-image image-box-shadow" ng-click="selectAndOpen($index+currentIndex-1)" ng-src="{{filteredImages[$index+currentIndex-1].url}}" />' +
+            '<div class="gallery-image-container" ng-repeat="image in displayList track by $index" ng-class="{\'cursor\': ($index+currentIndex-1 >= 0 && $index+currentIndex-1 < filteredImages.length) ? \'pointer\' : \'auto\'}">' +
+                '<img class="gallery-image image-box-shadow" ng-click="selectAndOpen($index+currentIndex-1)" ng-show="$index+currentIndex-1 >= 0 && $index+currentIndex-1 < filteredImages.length" ng-src="{{filteredImages[$index+currentIndex-1].url}}" />' +
             '</div>' +
             '<div class="text-center margin-top-25" ng-if="filteredImages.length === 0">' +
                 '<div>There are no images.</div>' +
