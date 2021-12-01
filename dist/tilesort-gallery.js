@@ -15,6 +15,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
             imageGalleryTpl: '=',
             imageGalleryCtrl: '=',
             layoutId: '=?',
+            dynamicLayout: '=',
 
             canEdit: '=?',
 
@@ -316,7 +317,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                     '<header class="card-header">' +
                         '<h4 class="card-title">{{filteredImages[currentIndex].title}}</h4>' +
                         '<ul class="card-actions pl-4">' +
-                            '<li>' +
+                            '<li ng-show="dynamicLayout.pollData.hasLock">' +
                                 '<button type="button" class="btn-toggle-state" ng-disabled="!canUpload(canEdit)" uib-tooltip="Upload"  tooltip-append-to-body="true" ng-if="uploadImage && canEdit"' +
                                     'ngf-select="uploadImage($files, layoutId)"' +
                                     'ngf-multiple="false"' +
@@ -345,7 +346,7 @@ angular.module('tilesortGallery', ['ui.bootstrap']).controller('TilesortModalCtr
                                     '</svg>' +
                                 '</button>' +
                             '</li>' +
-                            '<li class="pl-5">' +
+                            '<li class="pl-5" ng-show="dynamicLayout.pollData.hasLock">' +
                                 '<button type="button" class="btn-toggle-state" ng-click="changeMode(\'tiles\')" ng-disabled="filesProgress > 0" uib-tooltip="Re-order" tooltip-append-to-body="true">' +
                                     '<svg class="icon" width="22" height="22" fill="#5b7482">' +
                                         '<use xlink:href="#shape-icon_move_arrows"></use>' +
